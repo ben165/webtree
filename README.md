@@ -17,5 +17,5 @@ Folgende Funktionen wurde schon implementiert in JS Code:
 
 ## Beispiel der index.html
 
-![Beispiel](/Pfad/zum/bild.png)
+![Beispiel](bild.png)
 
