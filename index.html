@@ -7,14 +7,14 @@
 h1 {color:red;}
 span.treecolumn {
 	font-family: monospace;
-	font-size: 1.5em;
-	margin: 20px 20px 20px 20px;
-	padding: 5px;
+	font-size: 1em;
+	margin: 0;
+	padding: 1px;
 
 	border-style: solid;
-	border-width: 5px;
+	border-width: 1px;
 	border-color: black;
-	border-radius: 5px;}
+	border-radius: 1px;}
 </style>
 
 </head>
@@ -27,11 +27,11 @@ span.treecolumn {
 
 <p>Fill the tree with numbers in an iterative order from the top.</p>
 
-<form>
 <label for="amount">Amount of numbers:</label>
 <input type="text" id="amountInts" name="amount" value="25" style="width:50px;">
-<input type="button" value="Submit" onclick="plotTree()">
-</form>
+<input type="button" value="Submit" onclick="plotTree();">
+
+<input type="button" value="StepInfix" onclick="TreeFunctions.stepInfix(stepper);">
 
 <h2>Plot des Baumes</h2>
 <pre style="font-size:1.5em;" id="plot"></pre>
@@ -61,6 +61,18 @@ span.treecolumn {
 <p id="tief"></p>
 
 <script src="tree.js"></script>
+<script>plotTree()</script>
+
+<script>
+//Global variables
+var root;
+var stepper;
+
+//infixStepper = new Stepper(root, list1);
+//temp = TreeFunctions.stepInfix(root, list1);
+//const element = document.querySelector('n0');
+//document.getElementById("n0").style.color = "red";
+</script>
 
 </body>
 

@@ -6,58 +6,66 @@ class Node {
 	}
 }
 
+class Stepper {
+	constructor(root) {
+		this.node = root;
+		this.list1 = [];
+	}
+}
+
 
 // Display functions for the HTML site
-function plotTree(root) {
+function plotTree() {
 	amount = Number(document.getElementById("amountInts").value);
 
+	root = TreeFunctions.createTree(amount);
 	list1 = []
-	root = TreeFunctions.createTree(amount)
+	TreeFunctions.cleanup(root);
+
+	stepper = new Stepper(root);
 
 	TreeFunctions.plot(root, 0, list1)
 	//console.log( list1.join("") )
 	document.getElementById("plot").innerHTML = list1.join("");
 
-	console.log("Amount Nodes:\n")
+	//console.log("Amount Nodes:\n")
 	//console.log( TreeFunctions.amount(root) )
 	document.getElementById("amount").innerHTML = TreeFunctions.amount(root);
 	
-	console.log("Max Depth:\n")
+	//console.log("Max Depth:\n")
 	//console.log( TreeFunctions.depth(root) )
 	document.getElementById("tiefe").innerHTML = TreeFunctions.depth(root);
 	
-	console.log("IN-ORDER:\n")
+	//console.log("IN-ORDER:\n")
 	list1 = []
 	TreeFunctions.inorder(root, list1)
 	//console.log( list1 )
 	document.getElementById("infix").innerHTML = list1.join(", ");
 	
-	console.log("\nPRE-ORDER:\n")
+	//console.log("\nPRE-ORDER:\n")
 	list1 = []
 	TreeFunctions.preorder(root, list1)
 	//console.log( list1 )
 	document.getElementById("prefix").innerHTML = list1.join(", ");
 	
-	console.log("\nPOST-ORDER:\n")
+	//console.log("\nPOST-ORDER:\n")
 	list1 = []
 	TreeFunctions.postorder(root, list1)
 	//console.log( list1 )
 	document.getElementById("postfix").innerHTML = list1.join(", ");
 	
-	console.log("\nBreitensuche:\n")
+	//console.log("\nBreitensuche:\n")
 	list1 = []
 	TreeFunctions.breitensuche(root, list1)
 	//console.log( list1 )
 	document.getElementById("breit").innerHTML = list1.join(", ");
 	
-	console.log("\nTiefensuche:\n")
+	//console.log("\nTiefensuche:\n")
 	list1 = []
 	TreeFunctions.tiefensuche(root, list1)
 	//console.log( list1 )
 	document.getElementById("tief").innerHTML = list1.join(", ");
-
 }
-
 
 
 // Static tree functions
@@ -87,12 +95,25 @@ const TreeFunctions = {
 		}
 	},
 
+	// cleanup after iterativ creation
+	// removes nodes with null values
+	cleanup(node) {
+		if (node != null) {
+			if (node.l != null && node.l.value == null) {
+				node.l = null; }
+			this.cleanup(node.l, list1);
+
+			if (node.r != null && node.r.value == null) {
+				node.r = null; }
+			this.cleanup(node.r, list1);
+		}
+	},
 
 	// Traversierung: Wanderung durch Baum verschiedene Verfahren
-	
+
 	// LVR Inorder
 	inorder(node, list1) {
-		if (node != null && node.value != null) {
+		if (node != null) { // && node.value != null
 			this.inorder(node.l, list1);
 			//console.log(node.value);
 			list1.push(node.value);
@@ -102,7 +123,7 @@ const TreeFunctions = {
 	
 	// VLR Proorder
 	preorder(node, list1) {
-		if (node != null && node.value != null) {
+		if (node != null) {
 			//console.log(node.value);
 			list1.push(node.value);
 			this.preorder(node.l, list1);
@@ -112,7 +133,7 @@ const TreeFunctions = {
 	
 	// LRV Postorder
 	postorder(node, list1) {
-		if (node != null && node.value != null) {
+		if (node != null) {
 			this.postorder(node.l, list1);
 			this.postorder(node.r, list1);
 			//console.log(node.value);
@@ -125,16 +146,16 @@ const TreeFunctions = {
 		//var temp;
 		queue = [];
 				
-		if (node != null && node.value != null) { 
+		if (node != null) { 
 			queue.push( node ); }
 			
 		while ( queue.length != 0 ) {
 			temp = queue.splice(0,1)[0];
 			list1.push( temp.value );
 		
-			if (temp.l != null && temp.l.value != null) {
+			if (temp.l != null) {
 				queue.push(temp.l); }
-			if (temp.r != null && temp.r.value != null) {
+			if (temp.r != null) {
 				queue.push(temp.r); }
 		}
 	},
@@ -144,7 +165,7 @@ const TreeFunctions = {
 	tiefensuche(node, list1) {
 		stack = [];
 		
-		if ( node != null && node.value != null) {
+		if ( node != null) {
 			stack.push(node); }
 		
 		while ( stack.length != 0 ) {
@@ -152,9 +173,9 @@ const TreeFunctions = {
 			
 			list1.push( temp.value );
 
-			if (temp.r != null && temp.r.value != null) {
+			if (temp.r != null) {
 				stack.push(temp.r); }
-			if (temp.l != null && temp.l.value != null) {
+			if (temp.l != null) {
 				stack.push(temp.l);	}
 		}
 	},
@@ -187,27 +208,48 @@ const TreeFunctions = {
 	},
 
 
-	// Plotten des Baumes
+	// Plotten des Baumes von links nach rechts
 	plot(node, tiefe, list1) {
 		if (node != null) {
 			++tiefe;
 			this.plot(node.l, tiefe, list1);
 			for (i=1; i<tiefe; i++) {
 				list1.push("    "); }
-
-			if ( node.value != null ) {
-				list1.push("<span class=\"treecolumn\" id=\"" + String(node.value) + "\">" + String(node.value) + "</span>");
-			}
-			list1.push("\n");
-
+			list1.push("<span class=\"treecolumn\" id=\"n" + String(node.value) + "\">" + String(node.value) + "</span>\n");
 			this.plot(node.r, tiefe, list1);
 		}
+	},
+
+	// Reset Stepper
+	stepReset(stepper, root) {
+		infixStepper.node = root;
+		infixStepper.list1 = [];
+	},
+
+	// Infix Stepper
+	stepInfix(infixStepper) {
+		while ( infixStepper.list1.length != 0 || infixStepper.node != null ) {
+			if ( infixStepper.node != null ) {
+				infixStepper.list1.push( infixStepper.node )
+				infixStepper.node = infixStepper.node.l;
+			} 
+			else {
+				infixStepper.node = infixStepper.list1.pop();
+				temp = infixStepper.node;
+				//element = document.querySelector("n" + String(temp.value));
+				document.getElementById("n" + String(temp.value) ).style.color = "red";
+				infixStepper.node = infixStepper.node.r;
+				return;
+			}
+		}
 	}
+
+
 
 }
 
 
-/*
+/* Manually creation
 var root = new Node(0);
 root.l = new Node(1);
 root.r = new Node(2);
