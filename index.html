@@ -5,6 +5,16 @@
 
 <style>
 h1 {color:red;}
+span.treecolumn {
+	font-family: monospace;
+	font-size: 1.5em;
+	margin: 20px 20px 20px 20px;
+	padding: 5px;
+
+	border-style: solid;
+	border-width: 5px;
+	border-color: black;
+	border-radius: 5px;}
 </style>
 
 </head>
@@ -13,11 +23,15 @@ h1 {color:red;}
 
 <body>
 
-<h1>Tree Example</h1>
+<h1>Tree Generation</h1>
 
-<p>
-Ein Beispiel Baum wurde händische erstellt, siehe Code in <b>tree.js</b>.
-</p>
+<p>Fill the tree with numbers in an iterative order from the top.</p>
+
+<form>
+<label for="amount">Amount of numbers:</label>
+<input type="text" id="amountInts" name="amount" value="25" style="width:50px;">
+<input type="button" value="Submit" onclick="plotTree()">
+</form>
 
 <h2>Plot des Baumes</h2>
 <pre style="font-size:1.5em;" id="plot"></pre>
