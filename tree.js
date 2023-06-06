@@ -4,6 +4,9 @@ class Node {
 		this.l = null;
 		this.r = null;
 	}
+	x = -1;
+	y = -1;
+	width = -1;
 }
 
 class Stepper {
@@ -22,11 +25,19 @@ function plotTree() {
 	list1 = []
 	TreeFunctions.cleanup(root);
 
+	TreeFunctions.posSet2(root, 700, 0, 700);
+
+	// waagrechter Plot
+	list1 = [];
+	TreeFunctions.plot2(root, list1)
+	document.getElementById("plot2").innerHTML = list1.join("");
+
 	stepper = new Stepper(root);
 
-	TreeFunctions.plot(root, 0, list1)
+	// alter Plot
+	//TreeFunctions.plot(root, 0, list1)
 	//console.log( list1.join("") )
-	document.getElementById("plot").innerHTML = list1.join("");
+	//document.getElementById("plot").innerHTML = list1.join("");
 
 	//console.log("Amount Nodes:\n")
 	//console.log( TreeFunctions.amount(root) )
@@ -95,7 +106,7 @@ const TreeFunctions = {
 		}
 	},
 
-	// cleanup after iterativ creation
+	// cleanup after iterativ creation of tree
 	// removes nodes with null values
 	cleanup(node) {
 		if (node != null) {
@@ -215,7 +226,7 @@ const TreeFunctions = {
 			this.plot(node.l, tiefe, list1);
 			for (i=1; i<tiefe; i++) {
 				list1.push("    "); }
-			list1.push("<span class=\"treecolumn\" id=\"n" + String(node.value) + "\">" + String(node.value) + "</span>\n");
+			list1.push("<span class=\"treecolumn\" id=\"n" + String(node.value) + "\">" + String(node.value) + " x:" + String(node.x) + " y:" + String(node.y) + "</span>\n");
 			this.plot(node.r, tiefe, list1);
 		}
 	},
@@ -242,9 +253,60 @@ const TreeFunctions = {
 				return;
 			}
 		}
+	},
+
+
+	// position calculation (x,y) with depth search (not working yet!)
+	posSet(node) {
+		stack = [];
+		
+		if ( node != null) {
+			stack.push(node); }
+		
+		while ( stack.length != 0 ) {
+			temp = stack.pop();
+			
+			list1.push( temp.value );
+
+			if (temp.r != null) {
+				stack.push(temp.r); }
+			if (temp.l != null) {
+				stack.push(temp.l);	}
+		}
+	},
+
+
+	posSet2(node, posx, posy, width) {
+		if (node != null) {
+			node.x = posx;
+			node.y = posy;
+			node.width = width;
+			this.posSet2(node.l, posx - width/2, posy+20, width/2);
+			this.posSet2(node.r, posx + width/2, posy+20, width/2);
+		}
+	},
+
+
+	// Plotten des Baumes waagrecht
+	plot2(node, list1) {
+		if (node != null) {
+			list1.push("<span class=\"tree2\" style=\"top: "+ String(node.y) +";left: "+ String(node.x) +";\" id=\"n" + String(node.value) + "\">" + String(node.value) + "</span>\n");
+			this.plot2(node.l, list1);
+			this.plot2(node.r, list1);
+		}
 	}
 
 
+//	plot2(node) {
+//		if (node != null) {
+//			++tiefe;
+//			this.plot(node.l, tiefe, list1);
+//			for (i=1; i<tiefe; i++) {
+//				list1.push("    "); }
+//			list1.push("<span class=\"treecolumn\" id=\"n" + String(node.value) + "\">" + String(node.value) + " x:" + String(node.x) + " y:" + String(node.y) + "</span>\n");
+//			this.plot(node.r, tiefe, list1);
+//		}
+//	},
 
 }
 
