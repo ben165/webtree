@@ -8,7 +8,7 @@ const width = canvas.width = window.innerWidth;
 const height = canvas.height = window.innerHeight;
 
 const size = 20;
-const cPercent = 0.8;
+const cPercent = 0.6;
 const cSpeed = 0.04;
 
 let testStore = [];
@@ -17,7 +17,7 @@ function updateHeight(x) {
 	x.height = 1 + Math.max(x.l.height, x.r.height);
 }
 
-function largestChild(x) {
+function longestChild(x) {
 	if (x.r.height > x.l.height) {
 		return x.r;
 	}
@@ -31,8 +31,8 @@ function randInt(min, max) {
 }
 
 function nodeRotate(x) {
-	let y = largestChild(x);
-	let z = largestChild(y);
+	let y = longestChild(x);
+	let z = longestChild(y);
 	let posX = getPos(x);
 	let posY = getPos(y);
 	let posZ = getPos(z);
@@ -288,7 +288,7 @@ function drawPartNode(node, part, oldPos, newPos) {
 	ctx.strokeStyle = node.color;
 	//for(let i=1; i>=0.8; i-=0.01){
 	ctx.arc(x, y, size, 0, 2 * Math.PI);
-		
+
 	//}
 	ctx.stroke();
 	ctx.strokeStyle = "black";
@@ -437,18 +437,21 @@ class Node {
 			this.r.height = 0;
 			this.l.p = this;
 			this.r.p = this;
-			frames.add([newHighlightFrame(root, [0,0], "red", this)]);
+			frames.add([newHighlightFrame(root, [0, 0], "red", this)]);
 
 		}
 		else if (this.value !== newValue) {
 			//debugger;
-			frames.add([newHighlightFrame(root, [0,0], "red", this)]);
+			frames.add([newHighlightFrame(root, [0, 0], "red", this)]);
 			this.next(newValue).insert(newValue);
 			updateHeight(this);
 			frames.add([new NodeFrame(root, [0, 0])]);
 			if (1 < Math.abs(this.r.height - this.l.height)) {
 				nodeRotate(this);
 			}
+		}
+		else if (this.value === newValue) {
+			frames.add([newHighlightFrame(root, [0, 0], "red", this)]);
 		}
 	}
 
@@ -542,10 +545,10 @@ class Node {
 		}
 	}
 
-	setColor(color, all){
-		if(this.value !== null){
+	setColor(color, all) {
+		if (this.value !== null) {
 			this.color = color;
-			if(all){
+			if (all) {
 				this.l.setColor(color, all);
 				this.r.setColor(color, all);
 			}
@@ -580,7 +583,7 @@ class NodeFrame {
 		this.oldPos = [oldPos[0], oldPos[1]];
 		this.newPos = [oldPos[0], oldPos[1]];
 		this.x = 1;
-		if(color !== undefined) this.node.setColor(color, true);
+		if (color !== undefined) this.node.setColor(color, true);
 	}
 
 	drawNext() {
@@ -620,7 +623,7 @@ class NodeFrame {
 	}
 }
 
-function newHighlightFrame(baseNode, pos, color, node){
+function newHighlightFrame(baseNode, pos, color, node) {
 	let nodeFrame = new NodeFrame(baseNode, pos, color);
 	nodeFrame.node.setColor("black", true);
 	let x = nodeFrame.node.find(node.value);
@@ -628,10 +631,18 @@ function newHighlightFrame(baseNode, pos, color, node){
 	return nodeFrame;
 }
 
-
 class Frames {
 	constructor() {
 		this.frames = [];
+		this.play = true;
+	}
+
+	stop() {
+		this.play = false;
+	}
+
+	resume() {
+		this.play = true;
 	}
 
 	add(frame) {
@@ -664,18 +675,19 @@ class Frames {
 		}
 		return new Promise((resolve, reject) => {
 			let loop = () => {
-				ctx.clearRect(0, 0, width, height);
 				let finished = true;
+				if (this.play === true) {
+					ctx.clearRect(0, 0, width, height);
 
-				for (let j = 0; j < this.frames[i].length; j++) {
-					let r = this.frames[i][j].drawNext();
-					finished = finished && r;
+					for (let j = 0; j < this.frames[i].length; j++) {
+						let r = this.frames[i][j].drawNext();
+						finished = finished && r;
+					}
 				}
-				/* for(let nodeFrame of this.frames[i]){
-					let r = nodeFrame.drawNext();
-					finished = finished && r;
-				} */
-
+				else{
+					resolve();
+					return;
+				}
 				if (!finished) {
 					requestAnimationFrame(loop);
 				}
@@ -683,11 +695,21 @@ class Frames {
 					setTimeout(() => { resolve(); }, 400);
 				}
 			};
+			debugger;
 			loop();
 		})
 	}
 
+	async drawSelected(start, end) {
+		for (let i = start; i < end; i++) {
+			await this.draw(i);
+		}
+	}
+
 	async drawAll() {
+		if (this.frames.length === 0) {
+			ctx.clearRect(0, 0, width, height);
+		}
 		for (let i = 0; i < this.frames.length; i++) {
 			await this.draw(i);
 		}
@@ -697,121 +719,85 @@ class Frames {
 let frames = new Frames();
 
 
-/* let root = new Node(713);
-root.insert(300);
-root.insert(954);
-root.insert(834);
-root.insert(969); 
-root.insert(129); 
-root.insert(558);
-root.insert(216);
-root.insert(876);
-//root.insert(149); 
-
-root.drawAll() */
-
-/*root.insert(3);
-root.insert(5);
-root.insert(8); */
-
-/* let root = new Node(1);
-root.insert(0);
-for(let i = 0; i<=30; i++){
-	let sm = root.l.getBiggest();
-	root.insert(sm.value + Math.pow(0.5,i+1))
-}   */
-/* let promise = new Promise((resolve, reject) => {
-	for (let j = 0; j < 10; j++) {
-		for (let i = 0; i <= 30; i++) {
-			root.insert(randInt(0, 999));
-		}
-
-		root = new Node(null);
-	}
-	resolve();
-}) */
-
-
 randStore = [];
 fixStore = [984, 229, 689, 283, 224, 496, 277, 861, 651, 554, 192, 568, 772, 9, 878, 285, 681, 422, 449, 968, 28];
 
 root = new Node(null);
-for(let j = 0; j<1; j++){
-	for(let i = 0; i<=30; i++){
-		let r = randInt(0,999);
-		randStore.push(r);
-		root.insert(r);
-		// root.insert(10-i);
-		testCorrect("Nach Insert", root);
+// for(let j = 0; j<1; j++){
+// 	for(let i = 0; i<=30; i++){
+// 		let r = randInt(0,999);
+// 		randStore.push(r);
+// 		root.insert(r);
+// 		// root.insert(10-i);
+// 		testCorrect("Nach Insert", root);
+// 	}
+// 	//root = new Node(null);
+// }
+// //frames.drawAll();
+
+class SelectedFrames {
+	constructor(frames, start, end) {
+		this.frames = frames;
+		this.start = start;
+		this.end = end;
 	}
-	//root = new Node(null);
 }
 
-// root.insertDraw(984);
-// root.insertDraw(229);
-// root.insertDraw(689);
-// root.insertDraw(283);
-// root.insertDraw(224);
-// root.insertDraw(496);
-// root.insertDraw(277);
-// root.insertDraw(861);
-// root.insertDraw(651);
-// root.insertDraw(554);
-// root.insertDraw(192);
-// testCorrect("Test 1", root);
-// root.insertDraw(568);
-// root.insertDraw(772);
-// root.insertDraw(9);
-// root.insertDraw(878);
-// root.insertDraw(285);
-// root.insertDraw(681);
-// root.insertDraw(422);
-// root.insertDraw(449);
-// root.insertDraw(968);
-// root.insertDraw(28);
+const insertField = document.getElementById("inputField");
+const insertButton = document.getElementById("insertButton");
 
+const randomField = document.getElementById("randomField");
+const randomButton = document.getElementById("randomButton");
 
+const clearButton = document.getElementById("clearButton");
 
+insertButton.addEventListener('click', handleInsert);
+randomButton.addEventListener('click', handleRandom);
+clearButton.addEventListener('click', handleClear);
 
-/* for (let i = 0; i <= 30; i++) {
-	root.insert(randInt(0, 999));
-} */
+async function handleInsert() {
+	try {
+		let x = parseFloat(insertField.value);
+		const start = frames.frames.length;
+		root.insert(x);
+		const end = frames.frames.length;
+		await frames.promise;
+		frames.promise = frames.drawSelected(start, end);
 
-/* async function test() {
-	let promise = new Promise((resolve, reject) => {
-		for (let j = 0; j < 1; j++) {
-			for (let i = 0; i <= 30; i++) {
-				root.insert(randInt(0, 999));
-			}
-			root = new Node(null);
+	} catch (error) {
+		// handle error
+	}
+}
+
+function handleClear() {
+	root = new Node(null);
+	frames.frames = [];
+	frames.drawAll();
+}
+
+async function handleRandom() {
+	try {
+		handleClear();
+		let x = parseFloat(randomField.value);
+		// handle wrong x
+		// handle duplicates
+		for (let i = 0; i < x; i++) {
+			let r = randInt(0, 999);
+			root.insert(r);
 		}
-		resolve();
-	})
-	await promise;
-	//frames.drawAll();
-}
-test(); */
-
-
-frames.drawAll();
-
-/* 
-let promise2 = new Promise((resolve, reject) => {
-	let sum = 0;
-	for (let j = 0; j < Math.pow(2,30); j++) {
-		sum += j;
+		await frames.promise;
+		frames.promise = frames.drawAll();
+	} catch (error) {
+		// handle error
 	}
-	resolve(sum);
-})
-
-async function test2(){
-	
-	let r = await promise2;
-	alert(r);
 }
 
-test2()
- */
+async function skipAnimation() {
+	frames.stop();
+	await frames.promise;
+	frames.resume();
+	frames.draw(frames.frames.length - 1);
+}
 
-/* let a = testStore[0]
-a.drawAll() */
+
+
