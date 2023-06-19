@@ -19,33 +19,78 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-4">
-                <div class="bg-secondary text-white p-2 m-2">
-                    Theorie I
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="p-2 m-2">
-                    Description of the first theory... Description of the first theory... Description of the first theory... Description of the first theory... Description of the first theory... Description of the first theory...
-                </div>
+            <div class="col-12 my-4">
+                <h1>Theory of AVL trees</h1>
+                
+                <h2>General</h2>
+                
+                <p class="p-1 m-1">
+                    In 1962 mathematicans and computer scientist <i>Georgy Adelson-Velsky</i> and <i>Evgenii Landis</i> inventet the AVL tree. 
+                    This was the first ever discoverd <i>self-balanced</i> binary search tree . 
+                    Today other balanced tree implemenation like the red-black trees are known.
+                </p>
+                <p class="p-1 m-1">
+                    The major advantages of AVL trees over binary search trees (BSTs) are, that insertions, deletions and searches are guaranted in O(log(n)) time. 
+                    Contrary, the worst case time for those operations in BSTs is O(n).
+                </p>
+                <p class="p-1 m-1">
+                
+                </p>
+            
+                <h2>Defintion</h2>
+                        <p class="p-1 m-1">
+                            The height of a binary search tree is defined as the number of elements on the longest path from the root to a leaf.
+                            A node is defined as balanced, if the height of the left subtree is at most one smaller or one bigger than the hight of the right subtree.
+                            A tree is called balanced or an AVL tree when all nodes are balanced.
+                        </p>
             </div>
         </div>
 
-        <!-- Platzhalter -->
+        <div class="row">
+            <div class="col-lg-12"><h2>First balancing example</h2></div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="bg-secondary text-white p-2 m-2">
+                    <p class="lead fw-bold">Rotating x, y to the right</p>
+                    <img src="LL.drawio.png" class="img-fluid" alt="Unbalanced tree 2">
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <p class="p-1 m-1">
+                    In this example we assume, that the node <strong>x</strong> is unbalanced and the longest path to a leaf starting from  <strong>x</strong>  ends in the subtree <strong>a</strong>.
+                    The way we can balance the tree is by moving <strong>x</strong> to the right and <strong>y</strong> up to where <strong>x</strong> previously was. 
+                    The only subtree that has to be rearanged is <strong>b</strong>, which has to go left to <strong>x</strong>.
+                </p>
+            </div>
+        </div>
+
+
+        <!-- SPACE -->
         <div class="row">
             <div class="col-lg-12 my-4"></div>
         </div>
 
+        
+        <div class="row">
+            <div class="col-lg-12"><h2>Second balancing example</h2></div>
+        </div>
+
         <div class="row">
             <div class="col-lg-4">
                 <div class="bg-secondary text-white p-2 m-2">
-                    Theorie II
+                    <p class="lead fw-bold">Rotating x, z to the right</p>
+                    <img src="LR.drawio.png" class="img-fluid" alt="Unbalanced tree 2">
                 </div>
             </div>
             <div class="col-lg-8">
-                <div class="p-2 m-2">
-                    Description of the second theory... Description of the second theory... Description of the second theory... Description of the second theory... Description of the first theory... Description of the first theory...
-                </div>
+                <p class="p-1 m-1">
+                    In this example we assume, that the node <strong>x</strong> is unbalanced and the longest path to a leaf starting from  <strong>x</strong>  ends in the subtree starting form the node <strong>z</strong>.
+                    The way we can balance the tree is by moving <strong>x</strong> to the right and <strong>z</strong> up to where <strong>x</strong> previously was. 
+                    The subtrees that have to be rearanged are the children of <strong>z</strong>, namely <strong>b</strong> and <strong>c</strong>.
+                    <strong>b</strong> moves right to <strong>y</strong> and <strong>c</strong> goes left to <strong>x</strong>.
+                </p>
             </div>
         </div>
 
