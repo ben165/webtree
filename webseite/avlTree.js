@@ -4,8 +4,16 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
-const width = canvas.width = window.innerWidth;
-const height = canvas.height = window.innerHeight;
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+function updateCanvasDim(){
+	width = canvas.width = window.innerWidth;
+	height = canvas.height = window.innerHeight;
+	skipAnimation();
+}
+
+window.addEventListener("resize", updateCanvasDim);
 
 const size = 20;
 const cPercent = 0.6;
@@ -625,6 +633,7 @@ class NodeFrame {
 
 function newHighlightFrame(baseNode, pos, color, node) {
 	let nodeFrame = new NodeFrame(baseNode, pos, color);
+	nodeFrame.x = nodeFrame.start = 0;
 	nodeFrame.node.setColor("black", true);
 	let x = nodeFrame.node.find(node.value);
 	x.color = color;
@@ -634,45 +643,48 @@ function newHighlightFrame(baseNode, pos, color, node) {
 class Frames {
 	constructor() {
 		this.frames = [];
-		this.play = true;
+		this.play = false;
+		this.current = 0;
+		this.cardinality = 0;
 	}
 
 	stop() {
 		this.play = false;
 	}
 
-	resume() {
-		this.play = true;
+	async go() {
+		if (this.play === false) {
+			this.play = true;
+			while (this.current < this.cardinality) {
+				await this.draw(this.current);
+				if (this.play === true) {
+					this.current += 1;
+				}
+				else {
+					break;
+				}
+			}
+			this.play = false;
+		}
 	}
 
 	add(frame) {
 		this.frames.push(frame);
+		this.cardinality += 1;
+	}
+
+	drawStatic(){
+		let last = this.frames.length - 1;
+		if( last !== -1){
+			this.frames[last].x = 1;
+
+		}
 	}
 
 	draw(i) {
-		// let loop = () => {
-		// 	ctx.clearRect(0, 0, width, height);
-		// 	let finished = true;
-
-		// 	for (let j = 0; j < this.frames[i].length; j++) {
-		// 		let r = this.frames[i][j].drawNext();
-		// 		finished = finished && r;
-		// 	}
-		// 	/* for(let nodeFrame of this.frames[i]){
-		// 		let r = nodeFrame.drawNext();
-		// 		finished = finished && r;
-		// 	} */
-
-		// 	if (!finished) {
-		// 		requestAnimationFrame(loop);
-		// 	}
-		// 	else {
-		// 		resolve();
-		// 	}
-		// };
-		for (let j = 0; j < this.frames[i].length; j++) {
-			this.frames[i][j].x = this.frames[i][j].start;
-		}
+		// for (let j = 0; j < this.frames[i].length; j++) {
+		// 	this.frames[i][j].x = this.frames[i][j].start;
+		// }
 		return new Promise((resolve, reject) => {
 			let loop = () => {
 				let finished = true;
@@ -684,7 +696,7 @@ class Frames {
 						finished = finished && r;
 					}
 				}
-				else{
+				else {
 					resolve();
 					return;
 				}
@@ -695,7 +707,6 @@ class Frames {
 					setTimeout(() => { resolve(); }, 400);
 				}
 			};
-			debugger;
 			loop();
 		})
 	}
@@ -735,14 +746,6 @@ root = new Node(null);
 // }
 // //frames.drawAll();
 
-class SelectedFrames {
-	constructor(frames, start, end) {
-		this.frames = frames;
-		this.start = start;
-		this.end = end;
-	}
-}
-
 const insertField = document.getElementById("inputField");
 const insertButton = document.getElementById("insertButton");
 
@@ -751,52 +754,60 @@ const randomButton = document.getElementById("randomButton");
 
 const clearButton = document.getElementById("clearButton");
 
+const toggleBox = document.getElementById("toggleAnimation");
+
 insertButton.addEventListener('click', handleInsert);
 randomButton.addEventListener('click', handleRandom);
 clearButton.addEventListener('click', handleClear);
+toggleBox.addEventListener('click', handleToggle);
 
-async function handleInsert() {
-	try {
-		let x = parseFloat(insertField.value);
-		const start = frames.frames.length;
-		root.insert(x);
-		const end = frames.frames.length;
-		await frames.promise;
-		frames.promise = frames.drawSelected(start, end);
-
-	} catch (error) {
-		// handle error
+function handleInsert() {
+	let x = parseFloat(insertField.value);
+	root.insert(x);
+	if(toggleBox.checked === true){
+		frames.go();
+	}
+	else{
+		skipAnimation();
 	}
 }
 
 function handleClear() {
 	root = new Node(null);
+	frames.stop();
 	frames.frames = [];
-	frames.drawAll();
+	frames.current = 0;
+	frames.cardinality = 0;
+	ctx.clearRect(0, 0, width, height);
 }
 
-async function handleRandom() {
-	try {
-		handleClear();
-		let x = parseFloat(randomField.value);
-		// handle wrong x
-		// handle duplicates
-		for (let i = 0; i < x; i++) {
-			let r = randInt(0, 999);
-			root.insert(r);
-		}
-		await frames.promise;
-		frames.promise = frames.drawAll();
-	} catch (error) {
-		// handle error
+function handleRandom() {
+	handleClear();
+	let x = parseInt(randomField.value);
+	// handle wrong x
+	// handle duplicates
+	for (let i = 0; i < x; i++) {
+		let r = randInt(0, 999);
+		root.insert(r);
+	}
+	if(toggleBox.checked === true){
+		frames.go();
+	}
+	else{
+		skipAnimation();
 	}
 }
 
-async function skipAnimation() {
+function handleToggle(){
+	if(toggleBox.checked === false){
+		skipAnimation();
+	}
+}
+
+function skipAnimation() {
 	frames.stop();
-	await frames.promise;
-	frames.resume();
-	frames.draw(frames.frames.length - 1);
+	frames.current = frames.cardinality - 1;
+	setTimeout(() => {frames.go();}, 100);
 }
 
 
