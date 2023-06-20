@@ -7,7 +7,7 @@ const ctx = canvas.getContext('2d');
 let width = canvas.width = window.innerWidth;
 let height = canvas.height = window.innerHeight;
 
-function updateCanvasDim(){
+function updateCanvasDim() {
 	width = canvas.width = window.innerWidth;
 	height = canvas.height = window.innerHeight;
 	skipAnimation();
@@ -673,9 +673,9 @@ class Frames {
 		this.cardinality += 1;
 	}
 
-	drawStatic(){
+	drawStatic() {
 		let last = this.frames.length - 1;
-		if( last !== -1){
+		if (last !== -1) {
 			this.frames[last].x = 1;
 
 		}
@@ -755,6 +755,7 @@ const randomButton = document.getElementById("randomButton");
 const clearButton = document.getElementById("clearButton");
 
 const toggleBox = document.getElementById("toggleAnimation");
+toggleBox.checked = true;
 
 insertButton.addEventListener('click', handleInsert);
 randomButton.addEventListener('click', handleRandom);
@@ -764,10 +765,10 @@ toggleBox.addEventListener('click', handleToggle);
 function handleInsert() {
 	let x = parseFloat(insertField.value);
 	root.insert(x);
-	if(toggleBox.checked === true){
+	if (toggleBox.checked === true) {
 		frames.go();
 	}
-	else{
+	else {
 		skipAnimation();
 	}
 }
@@ -782,7 +783,7 @@ function handleClear() {
 }
 
 function handleRandom() {
-	handleClear();
+	//handleClear();
 	let x = parseInt(randomField.value);
 	// handle wrong x
 	// handle duplicates
@@ -790,24 +791,26 @@ function handleRandom() {
 		let r = randInt(0, 999);
 		root.insert(r);
 	}
-	if(toggleBox.checked === true){
+	if (toggleBox.checked === true) {
 		frames.go();
 	}
-	else{
+	else {
 		skipAnimation();
 	}
 }
 
-function handleToggle(){
-	if(toggleBox.checked === false){
+function handleToggle() {
+	if (toggleBox.checked === false) {
 		skipAnimation();
 	}
 }
 
 function skipAnimation() {
-	frames.stop();
-	frames.current = frames.cardinality - 1;
-	setTimeout(() => {frames.go();}, 100);
+	if (frames.cardinality !== 0) {
+		frames.stop();
+		frames.current = frames.cardinality - 1;
+		setTimeout(() => { frames.go(); }, 100);
+	}
 }
 
 
