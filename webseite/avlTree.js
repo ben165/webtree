@@ -1,6 +1,3 @@
-// was machen mit doppeltem eintrag im Baum?
-
-// setup canvas
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -294,10 +291,8 @@ function drawPartNode(node, part, oldPos, newPos) {
 	ctx.beginPath();
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = node.color;
-	//for(let i=1; i>=0.8; i-=0.01){
 	ctx.arc(x, y, size, 0, 2 * Math.PI);
 
-	//}
 	ctx.stroke();
 	ctx.strokeStyle = "black";
 
@@ -309,37 +304,7 @@ function drawPartNode(node, part, oldPos, newPos) {
 	return [x, y];
 }
 
-function drawNode(node, i, j) {
-	let x = width * (j + 0.5) / Math.pow(2, i);
-	let y = 40 + 60 * i;
-
-	ctx.beginPath();
-	ctx.strokeStyle = "green";
-	ctx.arc(x, y, size, 0, 2 * Math.PI);
-	ctx.stroke();
-
-	ctx.font = "16px serif";
-	let s = (node.value).toString();
-	let len = ctx.measureText(s);
-	ctx.fillText(s, x - Math.floor(len.width / 2), y + 4);
-}
-
-function drawLine(i1, j1, i2, j2) {
-	let x1 = width * (j1 + 0.5) / Math.pow(2, i1);
-	let x2 = width * (j2 + 0.5) / Math.pow(2, i2);
-	let y1 = 40 + 60 * i1;
-	let y2 = 40 + 60 * i2;
-
-	let l = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-	let c = size / l;
-	ctx.beginPath();
-	ctx.moveTo(x1 + c * (x2 - x1), y1 + c * (y2 - y1));
-	c = (l - size) / l;
-	ctx.lineTo(x1 + c * (x2 - x1), y1 + c * (y2 - y1));
-	ctx.stroke();
-}
-
-function drawLine2(c1, c2) {
+function drawLine(c1, c2) {
 	let x1 = c1[0];
 	let x2 = c2[0];
 	let y1 = c1[1];
@@ -433,7 +398,6 @@ class Node {
 		}
 	}
 
-
 	insert(newValue) {
 		if (this.value === null) {
 			this.value = newValue;
@@ -449,7 +413,6 @@ class Node {
 
 		}
 		else if (this.value !== newValue) {
-			//debugger;
 			frames.add([newHighlightFrame(root, [0, 0], "red", this)]);
 			this.next(newValue).insert(newValue);
 			updateHeight(this);
@@ -476,20 +439,6 @@ class Node {
 		}
 	}
 
-	draw(i, j) {
-		if (this.value !== null) {
-			drawNode(this, i, j);
-			if (this.l.value !== null) {
-				this.l.draw(i + 1, 2 * j);
-				drawLine(i, j, i + 1, 2 * j);
-			}
-			if (this.r.value !== null) {
-				this.r.draw(i + 1, 2 * j + 1);
-				drawLine(i, j, i + 1, 2 * j + 1);
-			}
-		}
-	}
-
 	drawPart(part, oldPos, newPos) {
 		let cParent = null;
 		if (this.value !== null) {
@@ -497,24 +446,14 @@ class Node {
 			let cChild = null;
 			if (this.l.value !== null) {
 				cChild = this.l.drawPart(part, posLeft(oldPos), posLeft(newPos));
-				drawLine2(cParent, cChild);
+				drawLine(cParent, cChild);
 			}
 			if (this.r.value !== null) {
 				cChild = this.r.drawPart(part, posRight(oldPos), posRight(newPos));
-				drawLine2(cParent, cChild);
+				drawLine(cParent, cChild);
 			}
 		}
 		return cParent;
-	}
-
-	drawAll() {
-		ctx.clearRect(0, 0, width, height);
-		this.draw(0, 0);
-	}
-
-	insertDraw(newValue) {
-		this.insert(newValue);
-		this.drawAll();
 	}
 
 	getSmallest() {
@@ -544,11 +483,6 @@ class Node {
 			if (this.r.p !== this) { console.log(2, this); return false; }
 			if (this.l.value !== null && this.l.value >= this.value) { console.log(3, this); return false; }
 			if (this.r.value !== null && this.r.value <= this.value) { console.log(4, this); return false; }
-			/* 			if (this.p !== null){
-							if(this.value < this.p.value && this !== this.p.l) {return false;}
-							if(this.value > this.p.value && this !== this.p.r) {return false;}
-							if(this.value === this.p.value) {return false;}
-						} */
 			return this.l.correct() && this.r.correct();
 		}
 	}
@@ -564,8 +498,6 @@ class Node {
 	}
 }
 
-let root = new Node(null);
-
 function testCorrect(place, node) {
 	let sample = node.copy();
 	testStore.push(sample);
@@ -577,14 +509,6 @@ function testCorrect(place, node) {
 }
 
 class NodeFrame {
-	/* constructor(node, start, oldPos, newPos){
-		this.node = node.copy();
-		this.start = start;
-		this.oldPos = [oldPos[0], oldPos[1]];
-		this.newPos = [newPos[0], newPos[1]];
-		this.x = start;
-	} */
-
 	constructor(node, oldPos, color) {
 		this.node = node.copy();
 		this.start = 1;
@@ -673,18 +597,7 @@ class Frames {
 		this.cardinality += 1;
 	}
 
-	drawStatic() {
-		let last = this.frames.length - 1;
-		if (last !== -1) {
-			this.frames[last].x = 1;
-
-		}
-	}
-
 	draw(i) {
-		// for (let j = 0; j < this.frames[i].length; j++) {
-		// 	this.frames[i][j].x = this.frames[i][j].start;
-		// }
 		return new Promise((resolve, reject) => {
 			let loop = () => {
 				let finished = true;
@@ -710,47 +623,21 @@ class Frames {
 			loop();
 		})
 	}
-
-	async drawSelected(start, end) {
-		for (let i = start; i < end; i++) {
-			await this.draw(i);
-		}
-	}
-
-	async drawAll() {
-		if (this.frames.length === 0) {
-			ctx.clearRect(0, 0, width, height);
-		}
-		for (let i = 0; i < this.frames.length; i++) {
-			await this.draw(i);
-		}
-	}
 }
 
 let frames = new Frames();
-
-
-randStore = [];
-fixStore = [984, 229, 689, 283, 224, 496, 277, 861, 651, 554, 192, 568, 772, 9, 878, 285, 681, 422, 449, 968, 28];
-
-root = new Node(null);
-// for(let j = 0; j<1; j++){
-// 	for(let i = 0; i<=30; i++){
-// 		let r = randInt(0,999);
-// 		randStore.push(r);
-// 		root.insert(r);
-// 		// root.insert(10-i);
-// 		testCorrect("Nach Insert", root);
-// 	}
-// 	//root = new Node(null);
-// }
-// //frames.drawAll();
+let root = new Node(null);
 
 const insertField = document.getElementById("inputField");
+insertField.value = "";
+
 const insertButton = document.getElementById("insertButton");
+insertButton.disabled = true;
 
 const randomField = document.getElementById("randomField");
+randomField.value = "";
 const randomButton = document.getElementById("randomButton");
+randomButton.disabled = true;
 
 const clearButton = document.getElementById("clearButton");
 
@@ -761,16 +648,52 @@ insertButton.addEventListener('click', handleInsert);
 randomButton.addEventListener('click', handleRandom);
 clearButton.addEventListener('click', handleClear);
 toggleBox.addEventListener('click', handleToggle);
+insertField.addEventListener('input', verifyInsertField);
+randomField.addEventListener('input', verifyRandomField);
 
-function handleInsert() {
-	let x = parseFloat(insertField.value);
-	root.insert(x);
+const reInsert = /^\s*(\d|\d\d|\d\d\d)(\s+(\d|\d\d|\d\d\d))*\s*$/;
+const reRandom = /^\s*([1-9]|(1|2)\d|30)\s*$/;
+
+function verifyInsertField(){
+	if(reInsert.test(insertField.value)){
+		insertField.style.color = "green";
+		insertButton.disabled = false;
+	}
+	else{
+		insertField.style.color = "red";
+		insertButton.disabled = true;
+	}
+}
+
+function verifyRandomField(){
+	if(reRandom.test(randomField.value)){
+		randomField.style.color = "green";
+		randomButton.disabled = false;
+	}
+	else{
+		randomField.style.color = "red";
+		randomButton.disabled = true;
+	}
+}
+
+function animate(){
 	if (toggleBox.checked === true) {
 		frames.go();
 	}
 	else {
 		skipAnimation();
 	}
+}
+
+function handleInsert() {
+	let arr = insertField.value.split(/\s+/);
+	console.log(arr);
+	for (let x of arr){
+		root.insert(parseInt(x));
+	}
+	animate();
+	insertField.value = "";
+	insertField.focus();	
 }
 
 function handleClear() {
@@ -783,20 +706,12 @@ function handleClear() {
 }
 
 function handleRandom() {
-	//handleClear();
 	let x = parseInt(randomField.value);
-	// handle wrong x
-	// handle duplicates
 	for (let i = 0; i < x; i++) {
 		let r = randInt(0, 999);
 		root.insert(r);
 	}
-	if (toggleBox.checked === true) {
-		frames.go();
-	}
-	else {
-		skipAnimation();
-	}
+	animate();
 }
 
 function handleToggle() {
@@ -812,6 +727,3 @@ function skipAnimation() {
 		setTimeout(() => { frames.go(); }, 100);
 	}
 }
-
-
-
