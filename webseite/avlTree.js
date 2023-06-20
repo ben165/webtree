@@ -687,13 +687,13 @@ function animate(){
 
 function handleInsert() {
 	let arr = insertField.value.split(/\s+/);
-	console.log(arr);
 	for (let x of arr){
 		root.insert(parseInt(x));
 	}
 	animate();
 	insertField.value = "";
-	insertField.focus();	
+	insertField.focus();
+	insertButton.disabled = true;	
 }
 
 function handleClear() {
