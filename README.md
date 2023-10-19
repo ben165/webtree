@@ -1,25 +1,20 @@
-# webtree
-Task for class Web Engineering
+# WebTree and Flask Presentation
+
+These were our two projects in lecture "web engineering 1" at Mosbach university. It uses Bootstrap for CSS and vanilla JS with a canvas element to draw the AVL tree.
+
+## The AVL tree website
+
+In folder *webseite*.
+
+The startpage
+![no text](pics/01.png "no title")
 
 
-## Update 20.05.2023
+The AVL tree page
+![no text](pics/02.png "no title")
 
-Weitere Funktionen geadded:
+You can input numbers manually or choose a number for the amount of numbers which should be inputted randomly.
 
-- Erstellen eines Baumes mit *n* Zahlen (Benutzereingabe)
-- InfixStepper durch den Baum (Node wird rot markiert nach Klick auf Button)
+## Flask Presi
 
-## Update 17.05.2023
-
-Folgende Funktionen wurde schon implementiert in JS Code:
-
-- Anzahl Nodes
-- Maximale Tiefe
-- Infix
-- Prefix
-- Postfix
-- Breitensuche
-- Tiefensuche
-- Plot des Baumes
-
-
+In folder *flask_presi*.
