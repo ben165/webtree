@@ -7,10 +7,12 @@ These were our two projects in lecture "web engineering 1" at Mosbach university
 In folder *webseite*.
 
 The startpage
+
 ![no text](pics/01.png "no title")
 
 
 The AVL tree page
+
 ![no text](pics/02.png "no title")
 
 You can input numbers manually or choose a number for the amount of numbers which should be inputted randomly.
